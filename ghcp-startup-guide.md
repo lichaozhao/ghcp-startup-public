@@ -129,7 +129,7 @@ GitHub 的用户管理采用层级结构，从上到下依次为：
 
 向下滚动页面找到 Copilot 区域，点击绿色的 **Enable** 按钮启用 Copilot 功能。
 
-> ⚠️ **注意**：Enable 按钮出现需要先联系 GitHub/微软销售团队开通 GitHub Copilot 功能。如果看不到 Enable 按钮，请先登陆https://support.github.com/，开一个enable copilot的case，然后联系销售。
+> ⚠️ **注意**：Enable 按钮出现需要先联系 GitHub/微软销售团队开通 GitHub Copilot 功能。如果看不到 Enable 按钮，请先登陆https://support.github.com/ ，开一个enable copilot的case，然后联系销售。
 
 ![启用 Copilot 功能](ent-creation-screenshots/11.enable-copilot-feature.png)
 
