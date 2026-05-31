@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Copilot Premium Request 预算管理（User-Level Budgets）</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --panel-2: #1c2128;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #2f81f7;
+    --accent-hover: #1f6feb;
+    --green: #3fb950;
+    --red: #f85149;
+    --yellow: #d29922;
+    --radius: 8px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+  header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+  }
+  header h1 { margin: 0; font-size: 20px; }
+  header p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px; }
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 24px; flex-wrap: wrap; }
+  .tab-btn {
+    background: none; border: none; color: var(--muted);
+    padding: 10px 16px; cursor: pointer; font-size: 14px;
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+  }
+  .tab-btn:hover { color: var(--text); }
+  .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px; margin-bottom: 20px;
+  }
+  .card h2 { margin: 0 0 12px; font-size: 16px; }
+  .card h3 { margin: 18px 0 8px; font-size: 14px; }
+  label { display: block; font-size: 13px; margin: 12px 0 4px; color: var(--text); }
+  label .hint { color: var(--muted); font-weight: normal; }
+  input[type="text"], input[type="password"], input[type="number"], select, textarea {
+    width: 100%; background: var(--panel-2); border: 1px solid var(--border);
+    color: var(--text); border-radius: 6px; padding: 8px 10px; font-size: 14px;
+    font-family: inherit;
+  }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  textarea { min-height: 120px; resize: vertical; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .row > div { flex: 1; min-width: 220px; }
+  .btn {
+    background: var(--accent); color: #fff; border: none; border-radius: 6px;
+    padding: 9px 16px; font-size: 14px; cursor: pointer; margin-top: 14px;
+  }
+  .btn:hover { background: var(--accent-hover); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn.secondary { background: var(--panel-2); border: 1px solid var(--border); color: var(--text); }
+  .btn.danger { background: var(--red); }
+  .btn.danger:hover { background: #da3633; }
+  .pat-field { position: relative; }
+  .pat-field button {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px;
+  }
+  .alert {
+    border-radius: 6px; padding: 12px 14px; font-size: 13px; margin: 12px 0;
+    border: 1px solid transparent;
+  }
+  .alert.warn { background: rgba(210,153,34,.12); border-color: var(--yellow); color: #e3b341; }
+  .alert.info { background: rgba(47,129,247,.12); border-color: var(--accent); color: #79c0ff; }
+  .alert.ok { background: rgba(63,185,80,.12); border-color: var(--green); color: #56d364; }
+  .alert.err { background: rgba(248,81,73,.12); border-color: var(--red); color: #ff7b72; }
+  ul.checklist { padding-left: 0; list-style: none; }
+  ul.checklist li { padding: 6px 0 6px 26px; position: relative; font-size: 13px; }
+  ul.checklist li::before { content: "✓"; position: absolute; left: 0; color: var(--green); font-weight: bold; }
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; }
+  .progress { background: var(--panel-2); border-radius: 4px; height: 8px; overflow: hidden; min-width: 80px; }
+  .progress > span { display: block; height: 100%; background: var(--accent); }
+  .progress > span.over { background: var(--red); }
+  code, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+  pre {
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 6px;
+    padding: 12px 14px; overflow-x: auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px; line-height: 1.55; margin: 6px 0 0; color: var(--text);
+  }
+  .curl-block { position: relative; margin-top: 12px; }
+  .curl-block h3 { margin: 0 0 4px; }
+  .copy-btn {
+    position: absolute; top: 30px; right: 8px; background: var(--panel); color: var(--muted);
+    border: 1px solid var(--border); border-radius: 5px; padding: 3px 9px; font-size: 11px; cursor: pointer;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--accent); }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 11px; background: var(--panel-2); border: 1px solid var(--border); }
+  .spinner {
+    display: inline-block; width: 14px; height: 14px; border: 2px solid var(--muted);
+    border-top-color: transparent; border-radius: 50%; animation: spin .7s linear infinite;
+    vertical-align: middle; margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  dl dt { font-weight: 600; margin-top: 12px; font-size: 13px; }
+  dl dd { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+  .muted { color: var(--muted); }
+  .small { font-size: 12px; }
+  .results { margin-top: 14px; }
+  .results .line { padding: 6px 10px; border-radius: 4px; margin-bottom: 4px; font-size: 13px; }
+  .results .line.ok { background: rgba(63,185,80,.1); }
+  .results .line.err { background: rgba(248,81,73,.1); }
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.6); display: none;
+    align-items: center; justify-content: center; z-index: 100;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; max-width: 440px; width: 90%; }
+  .modal h3 { margin: 0 0 10px; }
+  .modal .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Copilot Premium Request 预算管理</h1>
+  <p>User-Level Budgets（用户级预算）· 纯前端调用 GitHub REST API · PAT 仅存于浏览器内存</p>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="info">说明与前置检查</button>
+    <button class="tab-btn" data-tab="create">创建预算</button>
+    <button class="tab-btn" data-tab="manage">查看与管理</button>
+  </div>
+
+  <!-- ============ TAB 1: INFO ============ -->
+  <div class="tab-panel active" id="tab-info">
+    <div class="alert warn">
+      <strong>重要前提：</strong>本能力仅支持 <strong>Enterprise 账户</strong>，是 enterprise-admin 专属功能。不支持组织（org）级、不支持 Copilot Pro/Pro+。不满足前提会导致预算"看起来配置了却不生效"。
+    </div>
+
+    <div class="card">
+      <h2>前置条件清单（请逐项自查）</h2>
+      <ul class="checklist">
+        <li>使用 <strong>Enterprise 账户</strong>（Copilot Enterprise / Business / Standalone）。</li>
+        <li>已在 <code>Settings &gt; AI Controls &gt; Copilot</code> 开启 <strong>"Premium request paid overages"</strong>。</li>
+        <li>已移除任何现存的 <strong>$0 企业级 premium request 预算</strong>（它会优先生效并阻断所有人）。</li>
+        <li>PAT 具备 <code>manage_billing:enterprise</code> scope。</li>
+        <li>操作者为 <strong>Enterprise Owner</strong> 或 <strong>Billing Manager</strong> 角色。</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>核心概念与优先级</h2>
+      <dl>
+        <dt>Cost Center</dt>
+        <dd>成本中心，用于归集计费的逻辑分组。</dd>
+        <dt>Budget（预算）</dt>
+        <dd>对 premium request 用量设置的金额上限，达到上限后可阻断后续用量。</dd>
+        <dt>Universal 预算（<code>budget_scope: "multi_user_customer"</code>）</dt>
+        <dd>面向所有 Copilot 用户的默认预算。<strong>每个企业只能有一个 universal 预算</strong>，重复创建返回 409。</dd>
+        <dt>个人预算（<code>budget_scope: "user"</code>）</dt>
+        <dd>面向单个 GitHub 用户的预算。<strong>个人预算始终优先于 universal 预算</strong>。</dd>
+      </dl>
+      <div class="alert info">
+        系统采用 <strong>"剩余额度最小者先阻断（lowest remaining headroom wins）"</strong> 逻辑跨层级生效。每位用户的 <strong>included premium requests 先消耗</strong>，<code>consumed_amount</code> 只反映<strong>超出部分</strong>的金额。
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>参数含义</h2>
+      <dl>
+        <dt>PAT</dt><dd>个人访问令牌，需 <code>manage_billing:enterprise</code> scope。仅保存在浏览器内存中。</dd>
+        <dt>enterprise（企业 slug）</dt><dd>企业标识符，用于构造 API 路径。</dd>
+        <dt>budget_amount</dt><dd>预算金额（美元）。设为 <code>0</code> 表示默认阻断全部 premium 用量。</dd>
+        <dt>budget_scope</dt><dd><code>multi_user_customer</code>（universal）或 <code>user</code>（个人）。</dd>
+        <dt>user</dt><dd>仅 <code>user</code> scope 需要，填 GitHub 用户名（无需数字 ID）。</dd>
+      </dl>
+      <p class="small muted">所有请求固定带头：<code>Accept: application/vnd.github+json</code>、<code>X-GitHub-Api-Version: 2022-11-28</code>、<code>Authorization: Bearer &lt;PAT&gt;</code>。</p>
+    </div>
+
+    <div class="card">
+      <h2>API curl 速查</h2>
+      <p class="small muted">以下示例可直接在终端运行。请先设置环境变量：<code>export PAT=&lt;你的令牌&gt;</code>、<code>export ENT=&lt;企业 slug&gt;</code>。所有命令均已带上固定请求头。</p>
+
+      <div class="curl-block">
+        <h3>① 创建统一预算（Universal，<code>multi_user_customer</code>）</h3>
+        <button class="copy-btn" data-copy>复制</button>
+        <pre>curl -X POST \
+  -H "Accept: application/vnd.github+json" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  -H "Authorization: Bearer $PAT" \
+  "https://api.github.com/enterprises/$ENT/settings/billing/budgets" \
+  -d '{
+    "budget_amount": 50,
+    "budget_scope": "multi_user_customer",
+    "prevent_further_usage": true,
+    "budget_product_sku": "premium_requests",
+    "budget_type": "BundlePricing",
+    "budget_alerting": { "will_alert": false, "alert_recipients": [] }
+  }'</pre>
+      </div>
+
+      <div class="curl-block">
+        <h3>② 创建个人预算（<code>user</code> scope，单个用户）</h3>
+        <button class="copy-btn" data-copy>复制</button>
+        <pre>curl -X POST \
+  -H "Accept: application/vnd.github+json" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  -H "Authorization: Bearer $PAT" \
+  "https://api.github.com/enterprises/$ENT/settings/billing/budgets" \
+  -d '{
+    "budget_amount": 20,
+    "budget_scope": "user",
+    "user": "octocat",
+    "prevent_further_usage": true,
+    "budget_product_sku": "premium_requests",
+    "budget_type": "BundlePricing",
+    "budget_alerting": { "will_alert": false, "alert_recipients": [] }
+  }'</pre>
+      </div>
+
+      <div class="curl-block">
+        <h3>③ 列出全部预算</h3>
+        <button class="copy-btn" data-copy>复制</button>
+        <pre>curl \
+  -H "Accept: application/vnd.github+json" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  -H "Authorization: Bearer $PAT" \
+  "https://api.github.com/enterprises/$ENT/settings/billing/budgets"</pre>
+      </div>
+
+      <div class="curl-block">
+        <h3>④ 查看指定用户的生效预算（effective_budget）</h3>
+        <button class="copy-btn" data-copy>复制</button>
+        <pre>curl \
+  -H "Accept: application/vnd.github+json" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  -H "Authorization: Bearer $PAT" \
+  "https://api.github.com/enterprises/$ENT/settings/billing/budgets?user=octocat&budgetTarget=premium_requests"</pre>
+      </div>
+
+      <div class="curl-block">
+        <h3>⑤ 更新预算（调额，PATCH）</h3>
+        <button class="copy-btn" data-copy>复制</button>
+        <pre>curl -X PATCH \
+  -H "Accept: application/vnd.github+json" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  -H "Authorization: Bearer $PAT" \
+  "https://api.github.com/enterprises/$ENT/settings/billing/budgets/$BUDGET_ID" \
+  -d '{ "budget_amount": 80 }'</pre>
+      </div>
+
+      <div class="curl-block">
+        <h3>⑥ 删除预算（DELETE）</h3>
+        <button class="copy-btn" data-copy>复制</button>
+        <pre>curl -X DELETE \
+  -H "Accept: application/vnd.github+json" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  -H "Authorization: Bearer $PAT" \
+  "https://api.github.com/enterprises/$ENT/settings/billing/budgets/$BUDGET_ID"</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ TAB 2: CREATE ============ -->
+  <div class="tab-panel" id="tab-create">
+    <div class="card">
+      <h2>公共凭据</h2>
+      <div class="row">
+        <div>
+          <label>PAT <span class="hint">（manage_billing:enterprise，仅存内存）</span></label>
+          <div class="pat-field">
+            <input type="password" id="create-pat" autocomplete="off" placeholder="ghp_..." />
+            <button type="button" data-toggle="create-pat">显示</button>
+          </div>
+        </div>
+        <div>
+          <label>企业名称 <span class="hint">（enterprise slug）</span></label>
+          <input type="text" id="create-enterprise" autocomplete="off" placeholder="my-enterprise" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>① 统一预算（Universal 默认预算）</h2>
+      <p class="small muted">为所有 Copilot 用户创建默认预算，<code>budget_scope: "multi_user_customer"</code>。每企业仅一个，重复创建返回 409。</p>
+      <div class="row">
+        <div>
+          <label>预算金额（美元）</label>
+          <input type="number" id="universal-amount" min="0" step="0.01" placeholder="例如 50（0 = 阻断全部）" />
+        </div>
+      </div>
+      <button class="btn" id="btn-create-universal">创建统一预算</button>
+      <div id="universal-result"></div>
+    </div>
+
+    <div class="card">
+      <h2>② 批量差异化预算（个人预算 · upsert）</h2>
+      <p class="small muted">逐个为指定用户处理个人预算，<code>budget_scope: "user"</code>。<strong>已存在则更新（PATCH），不存在则创建（POST）</strong>。支持上传 CSV 或粘贴列表，首行表头 <code>user,budget</code>。</p>
+      <label>CSV 文件 <span class="hint">（可选，首行 user,budget）</span></label>
+      <input type="file" id="bulk-file" accept=".csv,text/csv" />
+      <label>或直接粘贴 <span class="hint">（每行 user,budget）</span></label>
+      <textarea id="bulk-text" placeholder="user,budget&#10;octocat,20&#10;monalisa,35"></textarea>
+      <button class="btn" id="btn-create-bulk">批量 upsert 个人预算</button>
+      <div id="bulk-result" class="results"></div>
+    </div>
+
+    <div class="card">
+      <h2>③ Enterprise scope 预算（增量池上限）</h2>
+      <p class="small muted">用于设置增量池上限，作为 universal 默认预算（<code>budget_scope: "multi_user_customer"</code>）。</p>
+      <div class="row">
+        <div>
+          <label>预算金额（美元）</label>
+          <input type="number" id="ent-amount" min="0" step="0.01" placeholder="例如 1000" />
+        </div>
+      </div>
+      <button class="btn" id="btn-create-ent">创建 enterprise scope 预算</button>
+      <div id="ent-result"></div>
+    </div>
+  </div>
+
+  <!-- ============ TAB 3: MANAGE ============ -->
+  <div class="tab-panel" id="tab-manage">
+    <div class="card">
+      <h2>公共凭据</h2>
+      <div class="row">
+        <div>
+          <label>PAT <span class="hint">（manage_billing:enterprise，仅存内存）</span></label>
+          <div class="pat-field">
+            <input type="password" id="manage-pat" autocomplete="off" placeholder="ghp_..." />
+            <button type="button" data-toggle="manage-pat">显示</button>
+          </div>
+        </div>
+        <div>
+          <label>企业名称 <span class="hint">（enterprise slug）</span></label>
+          <input type="text" id="manage-enterprise" autocomplete="off" placeholder="my-enterprise" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>列出全部预算</h2>
+      <div class="row">
+        <div>
+          <label>按用户名查询 <span class="hint">（留空则分页显示全部）</span></label>
+          <input type="text" id="list-user-filter" placeholder="octocat" />
+        </div>
+      </div>
+      <button class="btn" id="btn-list">刷新 / 查询</button>
+      <div id="list-result"></div>
+    </div>
+
+    <div class="card">
+      <h2>查看指定用户的生效预算</h2>
+      <div class="row">
+        <div>
+          <label>GitHub 用户名</label>
+          <input type="text" id="lookup-user" placeholder="octocat" />
+        </div>
+      </div>
+      <button class="btn secondary" id="btn-lookup">查询 effective_budget</button>
+      <div id="lookup-result"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modal-title">确认操作</h3>
+    <p id="modal-body" class="small"></p>
+    <div id="modal-input-wrap" style="display:none">
+      <input type="number" id="modal-input" min="0" step="0.01" />
+    </div>
+    <div class="actions">
+      <button class="btn secondary" id="modal-cancel">取消</button>
+      <button class="btn danger" id="modal-ok">确认</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Tab switching ----------
+  document.querySelectorAll(".tab-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      document.querySelectorAll(".tab-btn").forEach(function (b) { b.classList.remove("active"); });
+      document.querySelectorAll(".tab-panel").forEach(function (p) { p.classList.remove("active"); });
+      btn.classList.add("active");
+      document.getElementById("tab-" + btn.dataset.tab).classList.add("active");
+    });
+  });
+
+  // ---------- PAT show/hide ----------
+  document.querySelectorAll("[data-toggle]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var input = document.getElementById(btn.dataset.toggle);
+      if (input.type === "password") { input.type = "text"; btn.textContent = "隐藏"; }
+      else { input.type = "password"; btn.textContent = "显示"; }
+    });
+  });
+
+  // ---------- Copy curl snippets ----------
+  document.querySelectorAll(".copy-btn[data-copy]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var pre = btn.parentElement.querySelector("pre");
+      if (!pre) return;
+      var text = pre.textContent;
+      var done = function () {
+        var prev = btn.textContent; btn.textContent = "已复制";
+        setTimeout(function () { btn.textContent = prev; }, 1500);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function () { fallbackCopy(text, done); });
+      } else { fallbackCopy(text, done); }
+    });
+  });
+  function fallbackCopy(text, cb) {
+    var ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); cb(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  // ---------- Constants ----------
+  var API_BASE = "https://api.github.com";
+  var BASE_HEADERS = {
+    "Accept": "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28"
+  };
+
+  // ---------- Helpers ----------
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function setAlert(container, type, msg) {
+    container.innerHTML = '<div class="alert ' + type + '">' + msg + "</div>";
+  }
+
+  function setLoading(container, msg) {
+    container.innerHTML = '<div class="alert info"><span class="spinner"></span>' + esc(msg || "请求中…") + "</div>";
+  }
+
+  function getCreds(scope) {
+    var pat = document.getElementById(scope + "-pat").value.trim();
+    var ent = document.getElementById(scope + "-enterprise").value.trim();
+    return { pat: pat, ent: ent };
+  }
+
+  function validateCreds(creds, container) {
+    if (!creds.pat) { setAlert(container, "err", "请填写 PAT。"); return false; }
+    if (!creds.ent) { setAlert(container, "err", "请填写企业名称（enterprise slug）。"); return false; }
+    return true;
+  }
+
+  // Map HTTP errors to readable messages
+  function describeError(status, body, retryAfter) {
+    var detail = body && body.message ? " —— " + esc(body.message) : "";
+    switch (status) {
+      case 401: return "鉴权失败（401）：PAT 无效或已过期。" + detail;
+      case 403:
+        if (retryAfter) return "触发限流（403）：请在 " + esc(retryAfter) + " 秒后重试。" + detail;
+        return "权限不足（403）：需 Enterprise Owner/Billing Manager 角色且 PAT 含 manage_billing:enterprise scope。" + detail;
+      case 404: return "未找到（404）：企业不存在或无访问权限。" + detail;
+      case 409: return "冲突（409）：universal 预算已存在，每个企业只能有一个。" + detail;
+      case 422: return "参数错误（422）：请检查请求字段。" + detail;
+      default: return "请求失败（" + status + "）。" + detail;
+    }
+  }
+
+  // Accept either a relative path or an absolute URL (pagination Link headers are absolute).
+  function resolveUrl(pathOrUrl) {
+    return /^https?:\/\//.test(pathOrUrl) ? pathOrUrl : API_BASE + pathOrUrl;
+  }
+
+  // Core fetch wrapper
+  function apiCall(creds, method, path, body) {
+    var headers = Object.assign({}, BASE_HEADERS, { "Authorization": "Bearer " + creds.pat });
+    var opts = { method: method, headers: headers };
+    if (body !== undefined) {
+      headers["Content-Type"] = "application/json";
+      opts.body = JSON.stringify(body);
+    }
+    return fetch(resolveUrl(path), opts).then(function (res) {
+      var retryAfter = res.headers.get("Retry-After");
+      return res.text().then(function (text) {
+        var json = null;
+        try { json = text ? JSON.parse(text) : null; } catch (e) { json = null; }
+        if (!res.ok) {
+          var err = new Error(describeError(res.status, json, retryAfter));
+          err.status = res.status;
+          throw err;
+        }
+        return json;
+      });
+    });
+  }
+
+  function budgetPath(ent) {
+    return "/enterprises/" + encodeURIComponent(ent) + "/settings/billing/budgets";
+  }
+
+  // Normalize the budgets list response into a plain array.
+  function extractBudgets(data) {
+    return Array.isArray(data) ? data : (data && data.budgets) || [];
+  }
+
+  // Parse an RFC 5988 Link header into { next, prev, first, last } absolute URLs.
+  function parseLinkHeader(link) {
+    var rels = {};
+    if (!link) return rels;
+    link.split(",").forEach(function (part) {
+      var m = part.match(/<([^>]+)>;\s*rel="([^"]+)"/);
+      if (m) rels[m[2]] = m[1];
+    });
+    return rels;
+  }
+
+  // Like apiCall (GET only) but also resolves pagination relations from the Link header.
+  function apiCallWithLinks(creds, pathOrUrl) {
+    var headers = Object.assign({}, BASE_HEADERS, { "Authorization": "Bearer " + creds.pat });
+    return fetch(resolveUrl(pathOrUrl), { method: "GET", headers: headers }).then(function (res) {
+      var retryAfter = res.headers.get("Retry-After");
+      var link = res.headers.get("Link");
+      return res.text().then(function (text) {
+        var json = null;
+        try { json = text ? JSON.parse(text) : null; } catch (e) { json = null; }
+        if (!res.ok) {
+          var err = new Error(describeError(res.status, json, retryAfter));
+          err.status = res.status;
+          throw err;
+        }
+        return { data: json, links: parseLinkHeader(link) };
+      });
+    });
+  }
+
+  // Follow pagination Link headers to fetch every budget. onPage(loadedCount) is optional.
+  function fetchAllBudgets(creds, onPage) {
+    var all = [];
+    function step(pathOrUrl) {
+      return apiCallWithLinks(creds, pathOrUrl).then(function (res) {
+        all = all.concat(extractBudgets(res.data));
+        if (onPage) onPage(all.length);
+        if (res.links.next) return step(res.links.next);
+        return all;
+      });
+    }
+    return step(budgetPath(creds.ent) + "?per_page=100");
+  }
+
+  // Build a create-budget request body
+  function buildBudgetBody(scope, amount, user) {
+    var body = {
+      budget_amount: amount,
+      budget_scope: scope,
+      prevent_further_usage: true,
+      budget_product_sku: "premium_requests",
+      budget_type: "BundlePricing",
+      budget_alerting: { will_alert: false, alert_recipients: [] }
+    };
+    if (scope === "user") { body.user = user; }
+    return body;
+  }
+
+  function parseAmount(raw) {
+    if (raw === "" || raw == null) return null;
+    var n = Number(raw);
+    if (!isFinite(n) || n < 0) return null;
+    return n;
+  }
+
+  // ---------- Confirm / prompt modal ----------
+  var modal = document.getElementById("modal");
+  var modalInputWrap = document.getElementById("modal-input-wrap");
+  var modalInput = document.getElementById("modal-input");
+  var modalResolve = null;
+  var modalHasInput = false;
+  function confirmDialog(title, bodyHtml) {
+    document.getElementById("modal-title").textContent = title;
+    document.getElementById("modal-body").innerHTML = bodyHtml;
+    modalHasInput = false;
+    modalInputWrap.style.display = "none";
+    modal.classList.add("show");
+    return new Promise(function (resolve) { modalResolve = resolve; });
+  }
+  // Resolves to the entered string, or null if cancelled.
+  function promptDialog(title, bodyHtml, placeholder) {
+    document.getElementById("modal-title").textContent = title;
+    document.getElementById("modal-body").innerHTML = bodyHtml;
+    modalHasInput = true;
+    modalInput.value = "";
+    modalInput.placeholder = placeholder || "";
+    modalInputWrap.style.display = "block";
+    modal.classList.add("show");
+    setTimeout(function () { modalInput.focus(); }, 0);
+    return new Promise(function (resolve) { modalResolve = resolve; });
+  }
+  document.getElementById("modal-cancel").addEventListener("click", function () {
+    modal.classList.remove("show"); if (modalResolve) modalResolve(modalHasInput ? null : false);
+  });
+  document.getElementById("modal-ok").addEventListener("click", function () {
+    modal.classList.remove("show"); if (modalResolve) modalResolve(modalHasInput ? modalInput.value : true);
+  });
+  modalInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { document.getElementById("modal-ok").click(); }
+  });
+
+  // ========== CREATE: universal ==========
+  document.getElementById("btn-create-universal").addEventListener("click", function () {
+    var out = document.getElementById("universal-result");
+    var creds = getCreds("create");
+    if (!validateCreds(creds, out)) return;
+    var amount = parseAmount(document.getElementById("universal-amount").value);
+    if (amount === null) { setAlert(out, "err", "请填写有效的非负金额。"); return; }
+    setLoading(out, "正在创建统一预算…");
+    apiCall(creds, "POST", budgetPath(creds.ent), buildBudgetBody("multi_user_customer", amount))
+      .then(function (data) {
+        setAlert(out, "ok", "统一预算创建成功，budget_id: <code>" + esc(data && data.budget_id) + "</code>");
+      })
+      .catch(function (e) { setAlert(out, "err", esc(e.message)); });
+  });
+
+  // ========== CREATE: enterprise scope ==========
+  document.getElementById("btn-create-ent").addEventListener("click", function () {
+    var out = document.getElementById("ent-result");
+    var creds = getCreds("create");
+    if (!validateCreds(creds, out)) return;
+    var amount = parseAmount(document.getElementById("ent-amount").value);
+    if (amount === null) { setAlert(out, "err", "请填写有效的非负金额。"); return; }
+    setLoading(out, "正在创建 enterprise scope 预算…");
+    apiCall(creds, "POST", budgetPath(creds.ent), buildBudgetBody("multi_user_customer", amount))
+      .then(function (data) {
+        setAlert(out, "ok", "Enterprise scope 预算创建成功，budget_id: <code>" + esc(data && data.budget_id) + "</code>");
+      })
+      .catch(function (e) { setAlert(out, "err", esc(e.message)); });
+  });
+
+  // ========== CREATE: bulk ==========
+  document.getElementById("bulk-file").addEventListener("change", function (ev) {
+    var file = ev.target.files && ev.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () { document.getElementById("bulk-text").value = reader.result; };
+    reader.readAsText(file);
+  });
+
+  // Parse "user,budget" lines; skip header; return {rows, errors}
+  function parseBulk(text) {
+    var lines = text.split(/\r?\n/);
+    var rows = [], errors = [];
+    lines.forEach(function (raw, idx) {
+      var line = raw.trim();
+      if (!line) return;
+      var parts = line.split(",");
+      var user = (parts[0] || "").trim();
+      var budgetRaw = (parts[1] || "").trim();
+      // skip header
+      if (idx === 0 && user.toLowerCase() === "user" && budgetRaw.toLowerCase() === "budget") return;
+      if (!user) { errors.push("第 " + (idx + 1) + " 行：用户名为空"); return; }
+      var amount = parseAmount(budgetRaw);
+      if (amount === null) { errors.push("第 " + (idx + 1) + " 行（" + user + "）：金额非法，须为非负数"); return; }
+      rows.push({ user: user, amount: amount });
+    });
+    return { rows: rows, errors: errors };
+  }
+
+  document.getElementById("btn-create-bulk").addEventListener("click", function () {
+    var out = document.getElementById("bulk-result");
+    var creds = getCreds("create");
+    if (!validateCreds(creds, out)) return;
+    var text = document.getElementById("bulk-text").value;
+    var parsed = parseBulk(text);
+    if (!parsed.rows.length) {
+      setAlert(out, "err", "没有可用的有效行。" + (parsed.errors.length ? "<br>" + parsed.errors.map(esc).join("<br>") : ""));
+      return;
+    }
+
+    confirmDialog("确认批量 upsert", "将处理 <strong>" + parsed.rows.length + "</strong> 个用户的个人预算：" +
+      "已存在则更新（PATCH）、不存在则创建（POST）。" +
+      (parsed.errors.length ? "<br>另有 " + parsed.errors.length + " 行被跳过。" : "")).then(function (ok) {
+      if (!ok) return;
+      var btn = document.getElementById("btn-create-bulk");
+      btn.disabled = true;
+      out.innerHTML = "";
+      if (parsed.errors.length) {
+        parsed.errors.forEach(function (e) {
+          out.innerHTML += '<div class="line err">⚠ ' + esc(e) + "</div>";
+        });
+      }
+      var progress = document.createElement("div");
+      progress.className = "alert info";
+      out.appendChild(progress);
+      progress.innerHTML = '<span class="spinner"></span>正在拉取现有预算以建立用户映射…';
+
+      // 方案A：先拉全量预算，建 user → budget_id 映射，再逐条决定 POST / PATCH。
+      fetchAllBudgets(creds, function (n) {
+        progress.innerHTML = '<span class="spinner"></span>正在拉取现有预算…已加载 ' + n + " 条";
+      }).then(function (all) {
+        var map = {};
+        all.forEach(function (b) {
+          if (b.budget_scope === "user" && b.user) {
+            map[String(b.user).toLowerCase()] = b.budget_id;
+          }
+        });
+
+        var done = 0, created = 0, updated = 0, failCount = 0;
+        function updateProgress() {
+          progress.innerHTML = '<span class="spinner"></span>进度 ' + done + " / " + parsed.rows.length +
+            "（新建 " + created + "，更新 " + updated + "，失败 " + failCount + "）";
+        }
+        updateProgress();
+
+        // 串行执行以尊重限流。
+        var chain = Promise.resolve();
+        parsed.rows.forEach(function (r) {
+          chain = chain.then(function () {
+            var existingId = map[r.user.toLowerCase()];
+            var req = existingId
+              ? apiCall(creds, "PATCH", budgetPath(creds.ent) + "/" + encodeURIComponent(existingId), { budget_amount: r.amount })
+              : apiCall(creds, "POST", budgetPath(creds.ent), buildBudgetBody("user", r.amount, r.user));
+            return req
+              .then(function (data) {
+                var line = document.createElement("div");
+                line.className = "line ok";
+                if (existingId) {
+                  updated++;
+                  line.innerHTML = "↻ 更新 " + esc(r.user) + " → $" + esc(r.amount) +
+                    "（budget_id: <code>" + esc(existingId) + "</code>）";
+                } else {
+                  created++;
+                  line.innerHTML = "✓ 新建 " + esc(r.user) + " → $" + esc(r.amount) +
+                    "（budget_id: <code>" + esc(data && data.budget_id) + "</code>）";
+                }
+                out.insertBefore(line, progress);
+              })
+              .catch(function (e) {
+                failCount++;
+                var line = document.createElement("div");
+                line.className = "line err";
+                line.innerHTML = "✗ " + esc(r.user) + " → " + esc(e.message);
+                out.insertBefore(line, progress);
+              })
+              .then(function () { done++; updateProgress(); });
+          });
+        });
+        return chain.then(function () {
+          progress.className = "alert " + (failCount ? "warn" : "ok");
+          progress.innerHTML = "批量完成：新建 " + created + "，更新 " + updated + "，失败 " + failCount +
+            "，共 " + parsed.rows.length + "。";
+        });
+      }).catch(function (e) {
+        progress.className = "alert err";
+        progress.innerHTML = "拉取现有预算失败，已中止：" + esc(e.message);
+      }).then(function () {
+        btn.disabled = false;
+      });
+    });
+  });
+
+  // ========== MANAGE: list ==========
+  function renderBudgetsTable(container, budgets, links, meta) {
+    if (!budgets || !budgets.length) { setAlert(container, "info", "没有匹配的预算。"); return; }
+    var html = "";
+    if (meta) { html += '<div class="alert info" style="margin-top:0">' + meta + "</div>"; }
+    html += '<table><thead><tr>' +
+      "<th>budget_id</th><th>scope</th><th>user</th><th>budget ($)</th><th>consumed ($)</th><th>进度</th><th>操作</th>" +
+      "</tr></thead><tbody>";
+    budgets.forEach(function (b) {
+      var amount = Number(b.budget_amount) || 0;
+      var consumed = Number(b.consumed_amount) || 0;
+      var pct = amount > 0 ? Math.min(100, (consumed / amount) * 100) : (consumed > 0 ? 100 : 0);
+      var over = amount > 0 && consumed > amount;
+      html += "<tr>" +
+        "<td class='mono'>" + esc(b.budget_id) + "</td>" +
+        "<td><span class='badge'>" + esc(b.budget_scope) + "</span></td>" +
+        "<td>" + esc(b.user || "—") + "</td>" +
+        "<td>" + esc(amount) + "</td>" +
+        "<td>" + esc(consumed) + "</td>" +
+        "<td><div class='progress'><span class='" + (over ? "over" : "") + "' style='width:" + pct + "%'></span></div></td>" +
+        "<td>" +
+          "<button class='btn secondary small' data-edit='" + esc(b.budget_id) + "' style='margin:0 6px 0 0;padding:4px 8px'>调额</button>" +
+          "<button class='btn danger small' data-del='" + esc(b.budget_id) + "' style='margin:0;padding:4px 8px'>删除</button>" +
+        "</td>" +
+      "</tr>";
+    });
+    html += "</tbody></table>";
+
+    var hasPaging = links && (links.prev || links.next);
+    if (hasPaging) {
+      html += '<div style="margin-top:12px;display:flex;gap:8px;align-items:center">' +
+        '<button class="btn secondary" data-page-prev' + (links.prev ? "" : " disabled") + ">上一页</button>" +
+        '<button class="btn secondary" data-page-next' + (links.next ? "" : " disabled") + ">下一页</button>" +
+        '<span class="small muted">本页 ' + budgets.length + " 条</span></div>";
+    }
+    container.innerHTML = html;
+
+    container.querySelectorAll("[data-edit]").forEach(function (btn) {
+      btn.addEventListener("click", function () { editBudget(btn.dataset.edit); });
+    });
+    container.querySelectorAll("[data-del]").forEach(function (btn) {
+      btn.addEventListener("click", function () { deleteBudget(btn.dataset.del); });
+    });
+    if (hasPaging) {
+      var prevBtn = container.querySelector("[data-page-prev]");
+      var nextBtn = container.querySelector("[data-page-next]");
+      if (prevBtn && links.prev) prevBtn.addEventListener("click", function () { loadListPage(links.prev); });
+      if (nextBtn && links.next) nextBtn.addEventListener("click", function () { loadListPage(links.next); });
+    }
+  }
+
+  // Render one page of the full budget list (follows Link headers for prev/next).
+  function loadListPage(pathOrUrl) {
+    var out = document.getElementById("list-result");
+    var creds = getCreds("manage");
+    if (!validateCreds(creds, out)) return Promise.resolve();
+    setLoading(out, "正在加载预算列表…");
+    return apiCallWithLinks(creds, pathOrUrl)
+      .then(function (res) {
+        renderBudgetsTable(out, extractBudgets(res.data), res.links);
+      })
+      .catch(function (e) { setAlert(out, "err", esc(e.message)); });
+  }
+
+  // Query a single user's budget via the by-user endpoint and show it in the table.
+  function loadByUser(user) {
+    var out = document.getElementById("list-result");
+    var creds = getCreds("manage");
+    if (!validateCreds(creds, out)) return Promise.resolve();
+    setLoading(out, "正在查询用户 " + user + " 的预算…");
+    var path = budgetPath(creds.ent) +
+      "?user=" + encodeURIComponent(user) + "&budgetTarget=premium_requests";
+    return apiCall(creds, "GET", path)
+      .then(function (data) {
+        var list = extractBudgets(data);
+        if (!list.length && data) {
+          var eff = data.effective_budget || (data.budget_id ? data : null);
+          if (eff) list = [eff];
+        }
+        renderBudgetsTable(out, list, null,
+          "按用户 <strong>" + esc(user) + "</strong> 查询结果（生效预算 effective_budget，可能来自 universal 层级）。");
+      })
+      .catch(function (e) { setAlert(out, "err", esc(e.message)); });
+  }
+
+  function loadList() {
+    var creds = getCreds("manage");
+    var out = document.getElementById("list-result");
+    if (!validateCreds(creds, out)) return Promise.resolve();
+    var filter = document.getElementById("list-user-filter").value.trim();
+    if (filter) { return loadByUser(filter); }
+    return loadListPage(budgetPath(creds.ent) + "?per_page=100");
+  }
+  document.getElementById("btn-list").addEventListener("click", loadList);
+
+  // ========== MANAGE: update (调额) ==========
+  function editBudget(budgetId) {
+    var creds = getCreds("manage");
+    var out = document.getElementById("list-result");
+    promptDialog("调整预算金额",
+      "为 budget_id <code>" + esc(budgetId) + "</code> 输入新的预算金额（美元，非负）。<br>提额立即生效；降额不回收已用量但会阻断后续。",
+      "例如 50")
+      .then(function (input) {
+        if (input === null) return;
+        var amount = parseAmount(input.trim());
+        if (amount === null) { setAlert(out, "err", "金额非法，操作取消。"); return; }
+        setLoading(out, "正在更新预算 " + budgetId + " …");
+        apiCall(creds, "PATCH", budgetPath(creds.ent) + "/" + encodeURIComponent(budgetId), { budget_amount: amount })
+          .then(function () { return loadList(); })
+          .catch(function (e) { setAlert(out, "err", esc(e.message)); });
+      });
+  }
+
+  // ========== MANAGE: delete ==========
+  function deleteBudget(budgetId) {
+    var creds = getCreds("manage");
+    var out = document.getElementById("list-result");
+    confirmDialog("确认删除预算",
+      "确定删除 budget_id <code>" + esc(budgetId) + "</code>？<br>删除个人预算后该用户将回落到 universal 预算，并保留累计消耗。此操作不可撤销。")
+      .then(function (ok) {
+        if (!ok) return;
+        setLoading(out, "正在删除预算 " + budgetId + " …");
+        apiCall(creds, "DELETE", budgetPath(creds.ent) + "/" + encodeURIComponent(budgetId))
+          .then(function () { return loadList(); })
+          .catch(function (e) { setAlert(out, "err", esc(e.message)); });
+      });
+  }
+
+  // ========== MANAGE: lookup user effective budget ==========
+  document.getElementById("btn-lookup").addEventListener("click", function () {
+    var out = document.getElementById("lookup-result");
+    var creds = getCreds("manage");
+    if (!validateCreds(creds, out)) return;
+    var user = document.getElementById("lookup-user").value.trim();
+    if (!user) { setAlert(out, "err", "请填写 GitHub 用户名。"); return; }
+    setLoading(out, "正在查询 " + user + " 的生效预算…");
+    var path = budgetPath(creds.ent) +
+      "?user=" + encodeURIComponent(user) + "&budgetTarget=premium_requests";
+    apiCall(creds, "GET", path)
+      .then(function (data) {
+        var eff = (data && (data.effective_budget || data)) || null;
+        if (!eff) { setAlert(out, "info", "未找到该用户的生效预算。"); return; }
+        var amount = Number(eff.budget_amount) || 0;
+        var consumed = Number(eff.consumed_amount) || 0;
+        var pct = amount > 0 ? Math.min(100, (consumed / amount) * 100) : 0;
+        var over = amount > 0 && consumed > amount;
+        out.innerHTML =
+          '<div class="card" style="margin-top:12px">' +
+            "<h3>" + esc(user) + " 的生效预算（effective_budget）</h3>" +
+            "<p class='small'>scope: <span class='badge'>" + esc(eff.budget_scope || "—") + "</span> · " +
+            "budget_id: <code>" + esc(eff.budget_id || "—") + "</code></p>" +
+            "<p class='small'>预算 $" + esc(amount) + " · 已消耗（超出部分）$" + esc(consumed) + "</p>" +
+            "<div class='progress'><span class='" + (over ? "over" : "") + "' style='width:" + pct + "%'></span></div>" +
+          "</div>";
+      })
+      .catch(function (e) { setAlert(out, "err", esc(e.message)); });
+  });
+})();
+</script>
+</body>
+</html>
