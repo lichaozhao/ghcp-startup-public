@@ -111,11 +111,15 @@ GitHub 的用户管理采用层级结构，从上到下依次为：
 
 ![登录 Azure 管理员](ent-creation-screenshots/09.login-azure-admin.png)
 
-### 步骤 9：确认 Azure Billing 配置完成
+### 步骤 9：确认 Azure Billing 配置完成，并激活 Enterprise
 
 完成授权后，返回 GitHub 设置页面，确认 Azure subscription 已成功配置并显示在 Payment information 中。
 
 ![Azure Billing 配置完成](ent-creation-screenshots/10.configured-azure-billing.png)
+
+此时，点击管理页面的 **Activate Paid Enterprise** 按钮，正式激活 GitHub Enterprise。
+
+![激活 Enterprise](ent-creation-screenshots/11-1.activate-enterprise.png)
 
 ---
 
