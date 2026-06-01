@@ -65,5 +65,5 @@
    - Budget Scope选择**Users**，这里选择具体的用户
    - Budget amount 按实际预期设置，注意勾选**Stop usage when user's budget limit is reached**选项，如果不勾选则用户即使达到预算限制也可以正常使用
    - 设置完毕后，应该如图：
-    ![图](org-budget-screenshots/user-budget.png)
+    ![图](ent-bugdet-screenshots/user-budget.png)
 
