@@ -61,6 +61,29 @@ curl \
 
 **已知问题** 
 - 目前针对个人的配额预算设置界面存在bug，非EMU非GHEC的用户在UI上选不到，需要用API来设置，参考API：
+  企业用户：
+```
+curl -X POST \
+  -H "Authorization: Bearer <PAT>" \
+  -H "Accept: application/vnd.github+json" \
+  -H "X-GitHub-Api-Version: 2026-03-10" \
+  "https://api.github.com/enterprises/{ent}/settings/billing/budgets" \
+  -d '{
+    "budget_type": "BundlePricing",
+    "budget_product_sku": "ai_credits",
+    "budget_scope": "user",
+    "budget_entity_name": "user_name",
+    "user": "user_name",
+    "budget_amount": 25,
+    "prevent_further_usage": true,
+    "budget_alerting": {
+      "will_alert": true,
+      "alert_recipients": ["admin_username"]
+    }
+  }'
+
+```
+free org用户：
 ```
 curl -X POST \
   -H "Authorization: Bearer <PAT>" \
