@@ -10,6 +10,39 @@
   入口在Budget设置页，点击universal 预算可以看到：
    ![图](ent-bugdet-screenshots/admin-view.png)
 
+**已知问题** 
+free org用户在创建好universal预算后，管理员无法看到创建的budget，需要用API来查看，参考API：
+```
+curl \
+  -H "Accept: application/vnd.github+json" \
+  -H "X-GitHub-Api-Version: 2026-03-10" \
+  -H "Authorization: Bearer $PAT" \
+  "https://api.github.com/orgs/$org/settings/billing/budgets"
+```
+正常可以看到：
+```
+    {
+      "id": "xxx-xx-xx-xx-xxx",
+      "budget_type": "BundlePricing",
+      "budget_product_sku": "ai_credits",
+      "budget_scope": "multi_user_customer",
+      "budget_amount": 30,
+      "prevent_further_usage": true,
+      "budget_entity_name": "your org name",
+      "budget_alerting": {
+        "will_alert": true,
+        "alert_recipients": [
+          "admin_username"
+        ]
+      },
+      "budget_thresholds": {
+
+      },
+      "has_next_page": null
+    }
+```
+
+
 - Token查看，暂时未上线
 
 ## 用户如何查看自己的消耗情况
@@ -26,5 +59,32 @@
    - 设置完毕后，应该如图：
     ![图](ent-bugdet-screenshots/user-budget.png)
 
+**已知问题** 
+- 目前针对个人的配额预算设置界面存在bug，非EMU非GHEC的用户在UI上选不到，需要用API来设置，参考API：
+```
+curl -X POST \
+  -H "Authorization: Bearer <PAT>" \
+  -H "Accept: application/vnd.github+json" \
+  -H "X-GitHub-Api-Version: 2026-03-10" \
+  "https://api.github.com/organizations/{org}/settings/billing/budgets" \
+  -d '{
+    "budget_type": "BundlePricing",
+    "budget_product_sku": "ai_credits",
+    "budget_scope": "user",
+    "budget_entity_name": "user_name",
+    "user": "user_name",
+    "budget_amount": 25,
+    "prevent_further_usage": true,
+    "budget_alerting": {
+      "will_alert": true,
+      "alert_recipients": ["admin_username"]
+    }
+  }'
+
+```
+
 ## 具体计费规则
 参考：[GHCP新计费模式说明](budget-config.md)中的计费规则部分
+
+## API的使用及示例
+请下载：[API示例html](budget-config.html)
