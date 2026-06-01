@@ -49,21 +49,5 @@
     ![图](ent-bugdet-screenshots/user-budget.png)
 
 # 其他问题
-> 后续会逐渐更新 
-## 管理员如何查看每个人的消耗情况
-- 费用查看
-- Token查看
-
-## 用户如何查看自己的消耗情况
-- 费用查看
-- Token查看
-
-## 如何调整某些用户的配额 
-1. 还是进入上文提到的Budget设置页
-2. 创建budget
-   - Budget Type选择**AI credits budget** 
-   - Budget Scope选择**Users**，这里选择具体的用户
-   - Budget amount 按实际预期设置，注意勾选**Stop usage when user's budget limit is reached**选项，如果不勾选则用户即使达到预算限制也可以正常使用
-   - 设置完毕后，应该如图：
-    ![图](ent-bugdet-screenshots/user-budget.png)
+参考：[must-do-on-June-1st.md](must-do-on-June-1st.md)中的常见问题部分，企业用户同样适用
 

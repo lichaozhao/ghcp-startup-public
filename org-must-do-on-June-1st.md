@@ -33,14 +33,4 @@
     ![图](org-budget-screenshots/org-budget.png)
 
 # 其他问题
-> 后续会逐渐更新 
-## 管理员如何查看每个人的消耗情况
-- 费用查看
-- Token查看
-
-## 用户如何查看自己的消耗情况
-- 费用查看
-- Token查看
-
-## 如何调整某些用户的配额 
-UI or API
+参考：[must-do-on-June-1st.md](must-do-on-June-1st.md)中的常见问题部分，企业用户同样适用
