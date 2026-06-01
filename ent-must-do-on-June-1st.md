@@ -32,7 +32,7 @@
 5. 如果没有，则点击右上角的绿色***New Budget***按钮确创建预算：
    - Budget Type选择**AI credits budget** 
    - Budget Scope选择**enterprise**
-   - Budget amount 按实际预期设置，金额为允许超出套餐的用量
+   - Budget amount 按实际预期设置，我这里设置为0，是我预期我的企业没有套餐之外的预算，金额为允许超出套餐的用量
    - 注意，在设置金额**Budget amount**下方有个**Stop usage when user's budget limit is reached**的选项需要勾选
 6. 设置完毕后，应该如图：
     ![图](ent-bugdet-screenshots/ent-budget.png)
