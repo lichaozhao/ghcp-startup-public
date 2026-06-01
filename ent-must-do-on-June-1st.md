@@ -42,7 +42,7 @@
 1. 访问 `https://github.com/enterprises/<您的企业名称>/billing/budgets`，进入预算设置页
 2. 点击右上角的绿色***New Budget***按钮确创建预算：
    - Budget Type选择**AI credits budget** 
-   - Budget Scope选择**Users**
+   - Budget Scope选择**Users**，这里不需要选择具体的用户，不选用户则会对企业内所有用户生效
    - Budget amount 按实际预期设置，建议先设置30，因为6，7，8三个月copilot for business用户有 30$ 的额度，9月才会恢复成 19$ 额度。也就是说9月份您还需要再来调整一次配额，从30调整到19。
    - 注意，在设置金额**Budget amount**下方有个**Stop usage when user's budget limit is reached**的选项需要勾选
 3. 设置完毕后，应该如图：
