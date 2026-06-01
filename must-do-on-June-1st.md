@@ -5,7 +5,7 @@
 
 # 常见问题：
 > 后续会逐渐更新 
-## 管理员如何查看每个人的消耗情况
+## 管理员如何查看每个人的配额和AICs消耗情况
 - 费用查看
   入口在Budget设置页，点击universal 预算可以看到：
    ![图](ent-bugdet-screenshots/admin-view.png)
@@ -42,8 +42,17 @@ curl \
     }
 ```
 
-
-- Token查看，暂时未上线
+- 查看AICs消耗
+  - Enterprise billing entity 总量和查看具体的人AI credit使用API:
+   ```
+   GET https://api.github.com/enterprises/{enterprise}/settings/billing/ai_credit/usage?year={YYYY}&month={M}
+   ```
+   - Enterprise billing entity 单用户：
+   ```
+   GET https://api.github.com/enterprises/{enterprise}/settings/billing/ai_credit/usage?year={YYYY}&month={M}&user={login}
+   ```
+   > 如果是 free org用户，把enterprises换成organizations，其他参数一样
+- 查看Token具体信息的功能暂时未上线
 
 ## 用户如何查看自己的消耗情况
 - 方法1，访问地址 https://github.com/settings/copilot/features 
