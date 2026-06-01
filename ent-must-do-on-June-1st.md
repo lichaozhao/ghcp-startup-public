@@ -37,7 +37,7 @@
 6. 设置完毕后，应该如图：
     ![图](ent-bugdet-screenshots/ent-budget.png)
 
-## 检查是否设置了每个人的配额的步骤
+## 检查是否设置了每个人的配额（universal budget）的步骤
 
 1. 访问 `https://github.com/enterprises/<您的企业名称>/billing/budgets`，进入预算设置页
 2. 点击右上角的绿色***New Budget***按钮确创建预算：
@@ -46,7 +46,7 @@
    - Budget amount 按实际预期设置，建议先设置30，因为6，7，8三个月copilot for business用户有 30$ 的额度，9月才会恢复成 19$ 额度。也就是说9月份您还需要再来调整一次配额，从30调整到19。
    - 注意，在设置金额**Budget amount**下方有个**Stop usage when user's budget limit is reached**的选项需要勾选
 3. 设置完毕后，应该如图：
-    ![图](ent-bugdet-screenshots/personal-budget.png)
+    ![图](ent-bugdet-screenshots/user-budget.png)
 
 # 其他问题
 > 后续会逐渐更新 
@@ -59,4 +59,11 @@
 - Token查看
 
 ## 如何调整某些用户的配额 
-UI or API
+1. 还是进入上文提到的Budget设置页
+2. 创建budget
+   - Budget Type选择**AI credits budget** 
+   - Budget Scope选择**Users**，这里选择具体的用户
+   - Budget amount 按实际预期设置，注意勾选**Stop usage when user's budget limit is reached**选项，如果不勾选则用户即使达到预算限制也可以正常使用
+   - 设置完毕后，应该如图：
+    ![图](org-budget-screenshots/user-budget.png)
+
