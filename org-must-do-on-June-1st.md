@@ -17,30 +17,24 @@
 
 # 建议马上做的操作
 
-需要马上做两个操作：
-- **检查并设置组织级预算**
+需要马上做一个操作：
 - **检查并设置每个人的配额**
 
-## 检查是否设置了组织级预算的步骤
+## 检查并设置每个人的配额
 1. 用管理员访问地址 `https://github.com/organizations/<您的组织名称>/settings/copilot/policies`，进入 Copilot 设置页
-2. 检查是否开启了 **"Premium request paid usage"** 选项；如果没有，开启它以启用预算功能
+2. 检查是否开启了 **AI credits paid usage** 选项；如果不希望用户使用的量超过默认的套餐内用量，这里可以关闭 **disable**。
 3. 访问 `https://github.com/organizations/<您的组织名称>/settings/billing/budgets`，进入预算设置页
-4. 确认预算列表如图：![图](org-bugdet-screenshots/org-budget.png)
-5. 如果没有，请点击右上角按钮创建预算
-6. 创建预算时的参数
-7. 创建结果如图：![图](org-bugdet-screenshots/org-create-budget.png)
-
-## 检查是否设置了每个人的配额的步骤
-1. 访问 `https://github.com/organizations/<您的组织名称>/settings/billing/budgets`，进入预算设置页
-2. 确认预算列表如图：![图](org-bugdet-screenshots/org-budget.png)
-3. 如果没有，请点击右上角按钮创建预算
-4. 创建个人配额时的参数
-5. 创建结果如图：![图](org-bugdet-screenshots/org-create-budget.png)
+4. 点击右上角的绿色***New Budget***按钮确创建预算：
+   - Budget Type选择**AI credits budget** 
+   - Budget Scope选择**Users**
+   - Budget amount 按实际预期设置，建议先设置30，因为6，7，8三个月copilot for business用户有 30$ 的额度，9月才会恢复成 19$ 额度。也就是说9月份您还需要再来调整一次配额，从30调整到19。
+   - 注意，在设置金额**Budget amount**下方有个**Stop usage when user's budget limit is reached**的选项需要勾选
+3. 设置完毕后，应该如图：
+    ![图](org-budget-screenshots/org-budget.png)
 
 # 其他问题
-
+> 后续会逐渐更新 
 ## 管理员如何查看每个人的消耗情况
-
 - 费用查看
 - Token查看
 
