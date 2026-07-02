@@ -188,7 +188,7 @@ GitHub 的用户管理采用层级结构，从上到下依次为：
 
 ## 八、预算与成本管理
 
-完成以上步骤后，建议进行预算配置以控制 Copilot 使用成本：
+完成以上步骤后，建议进行预算配置以控制 Copilot 使用成本，参考 [预算配置指南](budget-config.md) 获得更详细信息：
 
 1. **了解 GitHub 的预算和成本中心（Cost Center）机制**：GitHub Enterprise 支持通过 Cost Center 对不同部门或团队的用量进行分组和追踪
 2. **创建 Cost Center**：在 Billing and licensing > Cost centers 中创建成本中心，将组织或团队关联到对应的成本中心

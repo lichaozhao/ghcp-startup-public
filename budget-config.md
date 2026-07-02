@@ -1,11 +1,11 @@
 # 基本计费逻辑和相关名词
 
 ## 计费逻辑
->这里只以 copilot for business的用户举例
-- 每个用户每个月有 19$ 的额度，19$ 等于1900积分
-- 每次模型调用的成本等同于该模型厂商的列表价格，按照实际token的消耗情况消耗积分。参考[官方文档](https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing)
-- 所有用户的AI积分会组成一个大的积分池，默认情况下，每个成员都可以不限量的使用积分池的数据。极端情况，某个用户有可能在短时间内消耗完整个积分池的积分。
-- 6-8月，这三个月有促销，每个用户在成本不变的前提下，额度实际是3000积分。
+>这里只以 copilot for business（cfb）的用户举例，如果是 copilot for enterprise（cfe），计费逻辑是一样的，只是两者的每月默认额度不同。
+- 每个用户每个月需要支付19$ 订阅费用，里面包含 19$ 的额度，即 1900积分。消费超过19$ 的部分按实际模型Token的消耗情况做额外计费。
+- 每次模型调用的成本等同于该模型厂商的列表价格（区分 input、output、cache token等）。参考[官方文档](https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing)
+- 所有用户的AI积分会组成一个大的积分池，所有用户共享。默认情况下，每个成员都可以不限量的使用积分池的数据。极端情况，某个用户有可能在短时间内消耗完整个积分池的积分。
+- 2026年的6-8月，这三个月对6月1日之前创建了github enterprise的客户有促销，每个用户在成本不变的前提下，19$ 实际获得额度是3000积分。
 
 ## 官方词汇
 - AICs：AI Credits，AI积分，19$ 等于1900 AICs。
@@ -14,17 +14,26 @@
 
 ## 方便理解而在本文中使用的词汇
 - 默认池：每个成员有1900 AICs的额度，所有成员的额度加起来组成了一个默认的额度池。
-- 增量池：如果默认池不够用，管理员可以通过配置Enterprise或者Cost Center的预算来增加额度，这个增加的额度就叫增量池。
-- 个人配额：个人可以从额度池中取用的额度
+- 增量池：如果默认池不够用，管理员可以通过配置Enterprise的预算来增加额度，这个增加的额度就叫增量池。增量池有enterprise 范围的增量池，也有Cost Center范围的增量池。
+  - Enterprise 范围的增量池，在默认池耗尽后，对所有成员生效的增量池
+  - Cost Center 范围的增量池，在默认池耗尽后，只对Cost Center下的成员生效的增量池
+- 个人配额：个人可以从额度池中取用的额度。个人配额有三种：
+  - Universal Budget（对所有成员生效），优先级最低
+  - Cost Center Budget（对Cost Center下的成员生效），优先级中等
+  - User Budget（对指定的单个成员生效），优先级最高
 
 # 计费和预算控制逻辑 
 > [官方文档](https://docs.github.com/en/copilot/concepts/billing/usage-based-billing-for-organizations-and-enterprises)：A user's included AI credits are pooled at the billing entity level. 默认情况是一个enterprise对应一个billing entity。
 
 1. 默认池的增加只能通过增加成员来实现
-2. 成员使用copilot时，优先消耗默认池里的AICs
-3. 可以灵活调整不同成员的个人配额的额度
+2. 任何成员使用copilot时，优先消耗默认池里的AICs
+3. 可以灵活调整不同用户的个人配额的额度
 4. 可以为 Enterprise 范围增加增量池，也可以为 Cost Center 增加增量池
-5. 某个成员不能再使用copilot的情况：
+5. 在默认池耗尽后
+   - cost center成员优先消耗 cost center 增量池的额度，消耗完 cost center 增量池后，再根据设置看是否能消耗 enterprise 增量池的额度。
+   - 没有在cost center的成员，默认池耗尽后，直接消耗 enterprise 增量池的额度。
+6. 个人配额的检查优先级是 User Budget > Cost Center Budget > Universal Budget，即，在做copilot的额度检查时，优先查看User Budget，再看Cost Center Budget，最后看Universal Budget。如果user budget已经耗尽了，则不管Cost Center Budget和Universal Budget还有没有额度，成员都不能再使用copilot。
+6. 某个成员不能再使用copilot的情况：
    - 个人配额耗尽
    - 个人配额未耗尽
      - 默认池配额耗尽，且未配置增量池
@@ -62,7 +71,7 @@
 
 ### 4. 极端情况
 - Enterprise里有两个人张三和李四。每个人 19$ 额度，企业总计默认池有 38$ 的额度。
-- 管理员在enterprise scope设置预算为 0$ （exclude cost center），在costcenter1 设置预算为 10$ ，costcenter里只有张三
+- 管理员在enterprise scope设置预算为 0$ （exclude cost center），在costcenter 设置预算为 10$ ，costcenter里只有张三
 - 设置张三的个人配额是 29$ ，李四是 19$
 - 李四在6月初一直休假，到6月10号才回来，这时候张三已经用完了 29$ ，不能再使用copilot；而李四可用的额度是 9$ 
   - 此时默认池剩余 9$ ，增量池剩余 10$ ；月底账单是 38$ 
@@ -71,6 +80,7 @@
 1. 个人配额设置的总额度不应该小于 **默认池+增量池** 的总额度，否则可能会出现成员还有额度但是无法使用copilot的情况；
 2. 不建议单独创建 cost center 并设置增量池，因为上述情况4的存在，设置cost center的预算的意义不大；
 3. 建议直接在 enterprise 范围内设置增量池，并且**一定要**设置每个成员的个人配额；
-
+4. 6月30日增加了 Cost Center User Level Budget 的功能，方便以 cost center 为范围设置每个成员的个人配额。可以酌情使用。
+   
 # 配置过程
 参考[操作手册](https://github.com/nickhou1983/Github-Sop/blob/main/budget/github-enterprise-budget.md#%E6%AD%A5%E9%AA%A4-1%E6%A3%80%E6%9F%A5%E6%98%AF%E5%90%A6%E5%B7%B2%E9%85%8D%E7%BD%AE%E4%BC%81%E4%B8%9A%E7%BA%A7-budget)
