@@ -7,6 +7,7 @@
 - [GitHub Copilot 开通手册](ghcp-startup-guide.md)：从创建 GitHub Enterprise 到分配 Copilot 权限的完整流程。
 - 开通 [GH EMU 的配置过程](ghcp-emu-config.md)：企业管理员如何做企业 SSO 的集成。
 - [Coilot 预算与计费说明](budget-config.md)：Copilot AI Credits、预算和个人配额的基本概念和计费逻辑。管理员必读。
+- [Copilot 用量数据获取指南](ghcp-metrics.md)：席位、功能使用、代码生成、AI Credits 消耗等数据的 UI 入口、REST API 和数据格式，以及集成到自建管理控制台的建议。
 - 6月初管理员需要针对新的计费做的[调整](must-do-on-June-1st.md)。
 - Copilot Cli作为服务运行的特殊情况[说明](copilot-cli-as-service.md)。
 
