@@ -1,3 +1,6 @@
 /prompts
 .DS_Store
 tmp.txt
+tmp.md
+tmp.json
+curl.http
