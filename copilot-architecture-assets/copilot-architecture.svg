@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="1160" viewBox="0 0 1160 1160" role="img" aria-labelledby="title desc">
+<title id="title">Copilot 架构：相同引擎，不同宿主</title>
+<desc id="desc">左侧 VS Code Local 使用内置 harness 与 VS Code 聊天存储。右侧 CLI、App、VS Code Copilot、Visual Studio Insiders 可选新版 Chat 和自建 SDK 应用复用 Copilot runtime 实现，但不共用一个进程。其他 IDE 不能统一归为 CLI。Scout 经 GitHub Copilot 处理模型请求，但其 SDK 实现关系未确认。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#495057"/></marker></defs>
+<rect width="1160" height="1160" fill="#ffffff"/>
+<text x="32" y="57.5" text-anchor="start" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="30" fill="#000000">Copilot 架构：相同引擎，不同宿主</text>
+<text x="32" y="122.5" text-anchor="start" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="18" fill="#000000">箭头表示调用或持久化关系，不代表所有产品连接同一个服务进程。</text>
+<rect x="30" y="170" width="350" height="720" rx="14" fill="none" stroke="#1864ab" stroke-width="2"/>
+<rect x="410" y="170" width="720" height="720" rx="14" fill="none" stroke="#862e9c" stroke-width="2"/>
+<text x="205.0" y="207.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" fill="#000000">VS Code 原生链路</text>
+<text x="770.0" y="207.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="22" fill="#000000">Copilot SDK / CLI 执行体系</text>
+<rect x="50" y="255" width="310" height="150" rx="14" fill="none" stroke="#1864ab" stroke-width="2"/>
+<text x="205.0" y="305.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" fill="#000000">VS Code：Local</text>
+<text x="205.0" y="355.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" fill="#000000">原生聊天与 agent</text>
+<rect x="435" y="245" width="670" height="170" rx="14" fill="none" stroke="#862e9c" stroke-width="2"/>
+<text x="770.0" y="280.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" fill="#000000">Copilot CLI / Copilot App</text>
+<text x="770.0" y="330.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" fill="#000000">VS Code：Copilot / Visual Studio 新版 Chat</text>
+<text x="770.0" y="380.0" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" fill="#000000">自建 SDK 应用</text>
+<path d="M205 415 V495" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M770 425 V495" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="50" y="505" width="310" height="125" rx="14" fill="none" stroke="#1864ab" stroke-width="2"/>
+<text x="205.0" y="543.75" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="19" fill="#000000">VS Code 内置 harness</text>
+<text x="205.0" y="591.25" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="19" fill="#000000">Extension Host 中执行</text>
+<rect x="435" y="505" width="670" height="125" rx="14" fill="none" stroke="#2f9e44" stroke-width="2"/>
+<text x="770.0" y="542.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" fill="#000000">Copilot runtime：agent loop、工具调用、上下文</text>
+<text x="770.0" y="592.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" fill="#000000">宿主分别配置工具、权限与工作流</text>
+<path d="M205 640 V705" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M770 640 V705" fill="none" stroke="#495057" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="50" y="715" width="310" height="125" rx="14" fill="none" stroke="#1864ab" stroke-width="2"/>
+<text x="205.0" y="753.75" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="19" fill="#000000">VS Code 用户数据</text>
+<text x="205.0" y="801.25" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="19" fill="#000000">chatSessions / 编辑状态</text>
+<rect x="435" y="715" width="670" height="125" rx="14" fill="none" stroke="#2f9e44" stroke-width="2"/>
+<text x="770.0" y="752.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" fill="#000000">runtime 会话默认：~/.copilot/session-state/</text>
+<text x="770.0" y="802.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="20" fill="#000000">各宿主另有元数据；SDK 应用可定制存储</text>
+<rect x="30" y="925" width="1100" height="175" rx="14" fill="none" stroke="#495057" stroke-width="2"/>
+<text x="580.0" y="967.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="18" fill="#000000">其他 IDE 的原生插件不能统一归为 CLI；要区分原生 Chat、CLI agent 与 SDK 新版。</text>
+<text x="580.0" y="1012.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="18" fill="#000000">Visual Studio 的 SDK Chat 特指 2026-09-08 Insiders 可选新体验。</text>
+<text x="580.0" y="1057.5" text-anchor="middle" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="18" fill="#000000">Scout：官方确认经 GitHub Copilot 处理模型请求；SDK 实现关系未确认。</text>
+<text x="32" y="1133.75" text-anchor="start" dominant-baseline="middle" font-family="Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="15" fill="#000000">概念图 · 2026-09-16 · 不展示云端模型、认证或每种产品的具体进程数量</text>
+</svg>

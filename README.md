@@ -1,8 +1,9 @@
 # GitHub Copilot 的管理员指南
 
-本仓库整理 GitHub Copilot 企业开通、计费和预算配置相关资料，适合企业管理员快速参考。
+本仓库整理 GitHub Copilot 产品架构、企业开通、计费和预算配置相关资料，供开发者与企业管理员参考。
 
 ## 内容
+- [Copilot 产品、架构与会话管理入门](copilot-architecture-and-sessions.md)：面向新人的产品选型与架构关系，涵盖 CLI、VS Code、其他 IDE 插件、App、Scout、SDK，以及本地 session、跨端互通、Chronicle 和远程开发。
 - GH 的账号体系[说明](#github-账号体系说明)。
 - [GitHub Copilot 开通手册](ghcp-startup-guide.md)：从创建 GitHub Enterprise 到分配 Copilot 权限的完整流程。
 - 开通 [GH EMU 的配置过程](ghcp-emu-config.md)：企业管理员如何做企业 SSO 的集成。
@@ -13,6 +14,7 @@
 
 ## 适用对象
 
+- 希望系统了解 Copilot 产品与架构的开发者
 - GitHub Enterprise 管理员
 - Copilot 采购、计费或成本管理负责人
 - 需要为团队开通 Copilot 的技术负责人
@@ -43,4 +45,3 @@ GitHub 的用户管理采用层级结构，从上到下依次为：
 
 
 ![GitHub 账号体系说明](ent-creation-screenshots/00.github-account-explaination.png)
-
